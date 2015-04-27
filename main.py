@@ -8,8 +8,6 @@ class iSarename(object):
         '''Define characters to replace'''
         self.prev_char = prev_char
         self.new_char = new_char
-        # Rename files, directories or both
-        #self.fdb = fdb
 
     def rename(self):
         '''Generate the file names'''
@@ -22,51 +20,40 @@ class iSarename(object):
             for filename in filenames:
                 print(os.path.join(dirpath, filename))
 
+            # Stop from recursing into the Git directory
+            if '.git' in dirnames:
+                dirnames.remove('.git')
+
             # Rename directories
             print(dirnames)
             for dirname in dirnames:
-                if ' ' in dirname:
-                    # Replace space with underscore
-                    new_dirname = dirname.replace (prev_char, new_char)
-                    os.rename(dirname, new_dirname )
+                new_dirname = dirname.replace (prev_char, new_char)
+                os.rename(dirname, new_dirname )
 
             # Rename files
             print(filenames)
             for filename in filenames:
-                if ' ' in filename:
-                    # Replace space with underscore
-                    new_filename = filename.replace (prev_char, new_char)
-                    os.rename(filename, new_filename )
+                new_filename = filename.replace (prev_char, new_char)
+                os.rename(filename, new_filename )
 
-#prev_char = ' '
-#new_char = '_'
-#fdb = '_'
+# Input characters to replace
+# TODO Ask the user if he is sure of this operation
+prev_char = str(input("Please, enter the character to replace: ")).lower()
+# Input new characters
+new_char = str(input("Please, enter the new character: ")).lower()
 
-while True:
-    try:
-        prev_char = str(input("Please, enter the character to replace [SPACE]: ") or ' ')
-        break
-    except ValueError:
-        print("That wasn't a valid character(s). Please, try again: ")
+# User defined exception
+class ValueIncorrect(Exception): pass
 
 while True:
-    try:
-        new_char = str(input("Please, enter the new character [UNDERSCORE]: ") or '_')
-        break
-    except ValueError:
-        print("That wasn't a valid character(s). Please, try again: ")
+   try:
+       obj_ref = str(input("Please, enter F for files, D for directories, [B] for both files and directories: ") or 'b').lower()
+       if obj_ref != 'f' and obj_ref != 'd' and obj_ref != 'b':
+           raise ValueIncorrect
+       break
+   except ValueIncorrect:
+       print("The value is incorrect. Please, try again!")
 
-''' Choose files, directories or both
-while True:
-    try:
-        fdb = str(input("Rename Files, Directory or [B]oth? ") or 'b').lower()
-        if fdb == 'f' or fdb == 'd' or fdb == 'b':
-            break
-        else:
-            print("That wasn't a valid character(s). Please, try again!")
-    except ValueError:
-        print("That wasn't a valid character(s). Please, try again: ")
-'''
-
+# Assign characters to replace
 rename = iSarename(prev_char, new_char)
 rename.rename()
