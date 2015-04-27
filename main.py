@@ -8,6 +8,7 @@ class iSarename(object):
         '''Define characters to replace'''
         self.prev_char = prev_char
         self.new_char = new_char
+        self.obj_ref = obj_ref
 
     def rename(self):
         '''Generate the file names'''
@@ -25,16 +26,18 @@ class iSarename(object):
                 dirnames.remove('.git')
 
             # Rename directories
-            print(dirnames)
-            for dirname in dirnames:
-                new_dirname = dirname.replace (prev_char, new_char)
-                os.rename(dirname, new_dirname )
+            if obj_ref == 'd' or obj_ref == 'b':
+                print(dirnames)
+                for dirname in dirnames:
+                    new_dirname = dirname.replace (prev_char, new_char)
+                    os.rename(dirname, new_dirname )
 
             # Rename files
-            print(filenames)
-            for filename in filenames:
-                new_filename = filename.replace (prev_char, new_char)
-                os.rename(filename, new_filename )
+            if obj_ref == 'f' or obj_ref == 'b':
+                print(filenames)
+                for filename in filenames:
+                    new_filename = filename.replace (prev_char, new_char)
+                    os.rename(filename, new_filename )
 
 # Input characters to replace
 # TODO Ask the user if he is sure of this operation
