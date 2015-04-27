@@ -6,13 +6,24 @@ import renectory
 # Get directory path name
 dir_name = renectory.dirWalk().dir_name
 
+# User defined exception
+class ValueIncorrect(Exception): pass
+
 class iSarename(object):
     '''Rename directories and files'''
-    def __init__(self, prev_char, new_char):
+    def __init__(self):
         '''Define characters to replace'''
-        self.prev_char = prev_char
-        self.new_char = new_char
-        self.obj_ref = obj_ref
+        self.prev_char = str(input("Please, enter the character to replace or press Enter in order to replace the [SPACE]") or ' ').lower()
+        self.new_char = str(input("Please, enter the new character: ")).lower()
+        # Assign files and folders
+        while True:
+           try:
+               self.obj_ref = str(input("Please, enter F for files, D for directories, [B] for both files and directories: ") or 'b').lower()
+               if self.obj_ref != 'f' and self.obj_ref != 'd' and self.obj_ref != 'b':
+                   raise ValueIncorrect
+               break
+           except ValueIncorrect:
+               print("The value is incorrect. Please, try again!")
 
     def rename(self):
         '''Generate the file names'''
@@ -30,39 +41,62 @@ class iSarename(object):
                 dirnames.remove('.git')
 
             # Rename directories
-            if obj_ref == 'd' or obj_ref == 'b':
+            if self.obj_ref == 'd' or self.obj_ref == 'b':
                 print(dirnames)
                 for dirname in dirnames:
                     # Replace previous character(s) directory name with new character(s)
-                    new_dirname = dirname.replace (prev_char, new_char)
+                    new_dirname = dirname.replace (self.prev_char, self.new_char)
                     os.rename(os.path.join(dirpath, dirname), os.path.join(dirpath, new_dirname))
 
             # Rename files
-            if obj_ref == 'f' or obj_ref == 'b':
+            if self.obj_ref == 'f' or self.obj_ref == 'b':
                 print(filenames)
                 for filename in filenames:
                     # Replace previous character(s) file name with new character(s)
-                    new_filename = filename.replace (prev_char, new_char)
+                    new_filename = filename.replace (self.prev_char, self.new_char)
                     os.rename(os.path.join(dirpath, filename), os.path.join(dirpath, new_filename))
 
-# Input characters to replace
-# TODO Ask the user if he is sure of this operation
-prev_char = str(input("Please, enter the character to replace: ")).lower()
-# Input new characters
-new_char = str(input("Please, enter the new character: ")).lower()
+class iSelp(object):
+    def __init__(self, option):
+        self.option = option
 
-# User defined exception
-class ValueIncorrect(Exception): pass
+    def help(self):
+        print('Enter \'help\' or \'-h\' to ask help')
+        print('Enter \'lower\' to lowercase')
+        print('Enter \'rename\' to rename')
 
-while True:
-   try:
-       obj_ref = str(input("Please, enter F for files, D for directories, [B] for both files and directories: ") or 'b').lower()
-       if obj_ref != 'f' and obj_ref != 'd' and obj_ref != 'b':
-           raise ValueIncorrect
-       break
-   except ValueIncorrect:
-       print("The value is incorrect. Please, try again!")
+class iSower(object):
+    '''Lower file names'''
+    def __init__(self):
+        print('Lower file names')
 
-# Assign characters to replace
-rename = iSarename(prev_char, new_char)
-rename.rename()
+    def lower(self):
+        for dirpath, dirnames, filenames in os.walk(dir_name):
+
+            # Stop from recursing into the Git directory
+            if '.git' in dirnames:
+                dirnames.remove('.git')
+
+            # Rename files
+            print(filenames)
+            for filename in filenames:
+                new_filename = filename.lower()
+                os.rename(os.path.join(dirpath, filename), os.path.join(dirpath, new_filename))
+
+class iSoption():
+    '''Choose options'''
+    def __init__(self):
+        self.option = str(input("Please, enter an option or press Enter: ") or 'help').lower()
+
+# Loop while 'help' option
+option = iSoption().option
+while option != 'exit':
+    if option == 'help' or option == '-h':
+        iSelp(option).help()
+    if option == 'lower':
+        iSower().lower()
+        break
+    if option == 'rename':
+        iSarename().rename()
+        break
+    option = iSoption().option
