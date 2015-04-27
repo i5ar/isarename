@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 import os
+import renectory
+
+# Get directory path name
+dir_name = renectory.dirWalk().dir_name
 
 class iSarename(object):
     '''Rename directories and files'''
@@ -12,7 +16,7 @@ class iSarename(object):
 
     def rename(self):
         '''Generate the file names'''
-        for dirpath, dirnames, filenames in os.walk('.'):
+        for dirpath, dirnames, filenames in os.walk(dir_name):
             # Print path to all subdirectories
             for dirname in dirnames:
                 print(os.path.join(dirpath, dirname))
@@ -29,15 +33,17 @@ class iSarename(object):
             if obj_ref == 'd' or obj_ref == 'b':
                 print(dirnames)
                 for dirname in dirnames:
+                    # Replace previous character(s) directory name with new character(s)
                     new_dirname = dirname.replace (prev_char, new_char)
-                    os.rename(dirname, new_dirname )
+                    os.rename(os.path.join(dirpath, dirname), os.path.join(dirpath, new_dirname))
 
             # Rename files
             if obj_ref == 'f' or obj_ref == 'b':
                 print(filenames)
                 for filename in filenames:
+                    # Replace previous character(s) file name with new character(s)
                     new_filename = filename.replace (prev_char, new_char)
-                    os.rename(filename, new_filename )
+                    os.rename(os.path.join(dirpath, filename), os.path.join(dirpath, new_filename))
 
 # Input characters to replace
 # TODO Ask the user if he is sure of this operation
