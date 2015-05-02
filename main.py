@@ -64,6 +64,7 @@ class iSelp(object):
         print('Enter \'help\' or \'-h\' to ask help')
         print('Enter \'lower\' to lowercase')
         print('Enter \'rename\' to rename')
+        print('Enter \'reduce\' to reduce')
 
 class iSower(object):
     '''Lower file names'''
@@ -83,6 +84,40 @@ class iSower(object):
                 new_filename = filename.lower()
                 os.rename(os.path.join(dirpath, filename), os.path.join(dirpath, new_filename))
 
+class iSareduce(object):
+    '''Reduce number file names'''
+    def __init__(self):
+        print('Reduce number file names')
+
+    def reduce(self):
+        '''Reduce number file names'''
+        for dirpath, dirnames, filenames in os.walk(dir_name):
+
+            # Stop from recursing into the Git directory
+            if '.git' in dirnames:
+                dirnames.remove('.git')
+
+            # Get max length
+            length = []
+            for filename in filenames:
+                basename = os.path.splitext(filename)[0]
+                length.append(len(basename))
+            max_length = max(length)
+
+            # TODO Use filename reverse to increase instead of reduce
+            filenames_reverse = sorted(filenames, reverse=True)
+
+            # Reduce
+            for filename in filenames:
+                # Remove extension from the file name
+                basename = os.path.splitext(filename)[0]
+                # Reduce number base name
+                new_basename = str(int(basename)-1).zfill(max_length)
+                # Add extension to the base name
+                new_filename = new_basename + os.path.splitext(filename)[1]
+                # Rename
+                os.rename(os.path.join(dirpath, filename), os.path.join(dirpath, new_filename))
+
 class iSoption():
     '''Choose options'''
     def __init__(self):
@@ -98,5 +133,8 @@ while option != 'exit':
         break
     if option == 'rename':
         iSarename().rename()
+        break
+    if option == 'reduce':
+        iSareduce().reduce()
         break
     option = iSoption().option
