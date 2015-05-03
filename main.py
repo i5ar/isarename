@@ -1,10 +1,22 @@
 #!/usr/bin/env python
 
+isarename_info = {
+    "name": "iSarename",
+    "author": "Pierpaolo Rasicci",
+    "category": "Made with fun in my spare time",
+    "version": (0, 0, 1),
+    "python": (3, 4),
+    "description": "Rename files, directories or both" }
+
 import os
-import renectory
+import isascii
+import irenectory
+
+# Get iSar ascii logo
+isar_ascii_logo = isascii.iSarLogo().isar_ascii_logo
 
 # Get directory path name
-dir_name = renectory.dirWalk().dir_name
+dir_name = irenectory.dirWalk().dir_name
 
 # User defined exception
 class ValueIncorrect(Exception): pass
@@ -64,7 +76,16 @@ class iSelp(object):
         print('Enter \'help\' or \'-h\' to ask help')
         print('Enter \'lower\' to lowercase')
         print('Enter \'rename\' to rename')
-        print('Enter \'reduce\' to reduce')
+        print('Enter \'stepup\' to step the number up')
+        print('Enter \'stepdown\' to step the number down')
+        print('Enter \'info\' to ask info')
+
+class iSinfo(object):
+    def __init__(self):
+        print('Name: '+ isarename_info['name'])
+        print('Version: '+ '.'.join(map(str, (isarename_info['version']))))
+        print('Author: '+ isarename_info['author'])
+        print('Description: '+ isarename_info['description'])
 
 class iSower(object):
     '''Lower file names'''
@@ -87,10 +108,7 @@ class iSower(object):
 class iSareduce(object):
     '''Reduce number file names'''
     def __init__(self):
-        print('Reduce number file names')
 
-    def reduce(self):
-        '''Reduce number file names'''
         for dirpath, dirnames, filenames in os.walk(dir_name):
 
             # Stop from recursing into the Git directory
@@ -102,20 +120,33 @@ class iSareduce(object):
             for filename in filenames:
                 basename = os.path.splitext(filename)[0]
                 length.append(len(basename))
-            max_length = max(length)
+            # Define max length
+            self.max_length = max(length)
+            # Define reverse file names list
+            self.filenames_reverse = sorted(filenames, reverse=True)
 
-            # TODO Use filename reverse to increase instead of reduce
-            filenames_reverse = sorted(filenames, reverse=True)
+    def stepdown(self):
+        '''Step down number file names'''
+        for dirpath, dirnames, filenames in os.walk(dir_name):
 
-            # Reduce
             for filename in filenames:
                 # Remove extension from the file name
                 basename = os.path.splitext(filename)[0]
-                # Reduce number base name
-                new_basename = str(int(basename)-1).zfill(max_length)
+                # Step number base name
+                new_basename = str(int(basename)-1).zfill(self.max_length)
                 # Add extension to the base name
                 new_filename = new_basename + os.path.splitext(filename)[1]
                 # Rename
+                os.rename(os.path.join(dirpath, filename), os.path.join(dirpath, new_filename))
+
+    def stepup(self):
+        '''Step up number file names'''
+        for dirpath, dirnames, filenames in os.walk(dir_name):
+
+            for filename in self.filenames_reverse:
+                basename = os.path.splitext(filename)[0]
+                new_basename = str(int(basename)+1).zfill(self.max_length)
+                new_filename = new_basename + os.path.splitext(filename)[1]
                 os.rename(os.path.join(dirpath, filename), os.path.join(dirpath, new_filename))
 
 class iSoption():
@@ -134,7 +165,12 @@ while option != 'exit':
     if option == 'rename':
         iSarename().rename()
         break
-    if option == 'reduce':
-        iSareduce().reduce()
+    if option == 'stepdown':
+        iSareduce().stepdown()
         break
+    if option == 'stepup':
+        iSareduce().stepup()
+        break
+    if option == 'info':
+        iSinfo()
     option = iSoption().option
